@@ -6,21 +6,18 @@ import qdrant_client
 import torch
 from fastapi import File, UploadFile
 from llama_index.core import Document, Response, Settings, VectorStoreIndex
-from llama_index.core.node_parser import SentenceSplitter
+from llama_index.core.node_parser import SentenceSplitter, LangchainNodeParser
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.llms.huggingface import HuggingFaceLLM
 from llama_index.vector_stores.qdrant import QdrantVectorStore
 from transformers import AutoTokenizer, BitsAndBytesConfig
+from langchain.document_loaders import PyPDFLoader
+import pathlib
 
 logging.basicConfig(level=logging.INFO)
 app = fastapi.FastAPI()
 
-"""
-RAG app with two endpoints:
-1. put endpoint that uploads a file to the server, stores it in qdrant and returns a unique identifier
-2. get endpoint that takes the unique identifier and a question and returns the answer
 
-"""
 quantization_config = BitsAndBytesConfig(
     load_in_4bit=True,
     bnb_4bit_compute_dtype=torch.float16,
@@ -60,6 +57,35 @@ async def put(file: UploadFile = File(...)) -> dict:
     index = VectorStoreIndex.from_vector_store(vector_store)
 
     index.insert_nodes(nodes)
+
+    return {
+        "collection_name": collection_name,
+    }
+
+
+@app.post("/upload/pdf")
+async def upload_pdf(file: UploadFile = File(...)) -> dict:
+
+    filename = f"./{uuid.uuid4().hex}.pdf"
+    with open(filename, "wb") as f:
+        f.write(await file.read())
+
+    # delete file after reading
+
+    documents = PyPDFLoader(filename).load_and_split()
+
+    collection_name = file.filename + "_" + uuid.uuid4().hex
+
+    vector_store = QdrantVectorStore(
+        client=client,
+        collection_name=collection_name,
+    )
+
+    index = VectorStoreIndex.from_vector_store(vector_store)
+
+    index.insert_nodes([Document(text=doc.page_content) for doc in documents])
+
+    pathlib.Path(filename).unlink()
 
     return {
         "collection_name": collection_name,
