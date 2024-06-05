@@ -1,4 +1,5 @@
 import logging
+import os
 
 import requests
 
@@ -16,12 +17,15 @@ logging.basicConfig(level=logging.INFO)
 
 documents = [Document(text=file_content)]
 
+
+llm_name = os.getenv("LLM_NAME", "HuggingFaceH4/zephyr-7b-alpha")
+
 # bge-base embedding model
 Settings.embed_model = HuggingFaceEmbedding(model_name="BAAI/bge-base-en-v1.5")
-Settings.tokenizer = AutoTokenizer.from_pretrained("HuggingFaceH4/zephyr-7b-alpha")
+Settings.tokenizer = AutoTokenizer.from_pretrained(llm_name)
 Settings.llm = HuggingFaceLLM(
-    model_name="HuggingFaceH4/zephyr-7b-alpha",
-    tokenizer_name="HuggingFaceH4/zephyr-7b-alpha",
+    model_name=llm_name,
+    tokenizer_name=llm_name,
 )
 index = VectorStoreIndex.from_documents(
     documents,
