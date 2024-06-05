@@ -11,7 +11,7 @@ pypdf = "^4.2.0"
 llama-index = "^0.10.39"
 llama-index-embeddings-huggingface = "^0.2.0"
 llama-index-llms-ollama = "^0.1.5"
-llama-index-llms-huggingface = "^0.2.0"
+llama-index-llms-huggingface = "<0.2.0"
 aws-cdk-lib = "^2.143.1"
 requests = "^2.32.3"
 fastapi = "^0.111.0"
@@ -19,6 +19,7 @@ llama-index-vector-stores-qdrant = "^0.2.8"
 bitsandbytes = "^0.43.1"
 langchain = "^0.2.2"
 langchain-community = "^0.2.2"
+llama-index-llms-openvino = "^0.1.0"
 
 
 [build-system]
