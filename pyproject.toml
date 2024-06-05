@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "ragclass"
+version = "0.1.0"
+description = ""
+authors = ["Anthony Rolland <6172844+LaconicPneumonic@users.noreply.github.com>"]
+
+[tool.poetry.dependencies]
+python = "<3.13,>=3.10"
+sentence-transformers = "^2.7.0"
+pypdf = "^4.2.0"
+llama-index = "^0.10.39"
+llama-index-embeddings-huggingface = "^0.2.0"
+llama-index-llms-ollama = "^0.1.5"
+llama-index-llms-huggingface = "^0.2.0"
+aws-cdk-lib = "^2.143.1"
+requests = "^2.32.3"
+fastapi = "^0.111.0"
+llama-index-vector-stores-qdrant = "^0.2.8"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
