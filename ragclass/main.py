@@ -54,6 +54,7 @@ async def put(file: UploadFile = File(...)) -> dict:
         collection_name=collection_name,
     )
 
+    logging.info(f"Uploading {len(nodes)} nodes to collection {collection_name}")
     index = VectorStoreIndex.from_vector_store(vector_store)
 
     index.insert_nodes(nodes)
@@ -83,7 +84,12 @@ async def upload_pdf(file: UploadFile = File(...)) -> dict:
 
     index = VectorStoreIndex.from_vector_store(vector_store)
 
-    index.insert_nodes([Document(text=doc.page_content) for doc in documents])
+    nodes = SentenceSplitter(chunk_size=512).get_nodes_from_documents(
+        [Document(text=doc.page_content) for doc in documents]
+    )
+
+    logging.info(f"Uploading {len(nodes)} nodes to collection {collection_name}")
+    index.insert_nodes(nodes)
 
     pathlib.Path(filename).unlink()
 
