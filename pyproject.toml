@@ -19,7 +19,6 @@ llama-index-vector-stores-qdrant = "^0.2.8"
 bitsandbytes = "^0.43.1"
 langchain = "^0.2.2"
 langchain-community = "^0.2.2"
-llama-index-llms-openvino = "^0.1.0"
 
 
 [build-system]

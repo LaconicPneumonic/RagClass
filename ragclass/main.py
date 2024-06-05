@@ -1,51 +1,32 @@
 import logging
 import os
+import pathlib
 import uuid
 
 import fastapi
 import qdrant_client
-import torch
 from fastapi import File, UploadFile
+from langchain.document_loaders import PyPDFLoader
 from llama_index.core import Document, Response, Settings, VectorStoreIndex
-from llama_index.core.node_parser import SentenceSplitter, LangchainNodeParser
+from llama_index.core.node_parser import SentenceSplitter
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.llms.huggingface import HuggingFaceLLM
 from llama_index.vector_stores.qdrant import QdrantVectorStore
-from transformers import AutoTokenizer, BitsAndBytesConfig
-from langchain.document_loaders import PyPDFLoader
-import pathlib
-from llama_index.llms.openvino import OpenVINOLLM
-
+from transformers import AutoTokenizer
 
 logging.basicConfig(level=logging.INFO)
 app = fastapi.FastAPI()
 
 
-llm_name = os.getenv("LLM_NAME", "HuggingFaceH4/zephyr-7b-alpha")
+llm_name = os.getenv("LLM_NAME", "stabilityai/stablelm-zephyr-3b")
 embedding_name = "BAAI/bge-base-en-v1.5"
 
-ov_config = {
-    "PERFORMANCE_HINT": "LATENCY",
-    "NUM_STREAMS": "1",
-    "CACHE_DIR": "",
-}
 
 Settings.embed_model = HuggingFaceEmbedding(model_name=embedding_name)
 Settings.tokenizer = AutoTokenizer.from_pretrained(llm_name)
-Settings.llm = OpenVINOLLM(
+Settings.llm = HuggingFaceLLM(
     model_name=llm_name,
     tokenizer_name=llm_name,
-    model_kwargs={"ov_config": ov_config},
-    # context_window=int(os.getenv("CONTEXT_WINDOW", "3900")),
-    # max_new_tokens=256,
-    # model_kwargs={
-    #     "quantization_config": BitsAndBytesConfig(
-    #         load_in_4bit=True,
-    #         bnb_4bit_compute_dtype=torch.float16,
-    #         bnb_4bit_quant_type="nf4",
-    #         bnb_4bit_use_double_quant=True,
-    #     )
-    # },
 )
 
 client = qdrant_client.QdrantClient("http://localhost:6333")
