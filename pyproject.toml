@@ -16,6 +16,7 @@ aws-cdk-lib = "^2.143.1"
 requests = "^2.32.3"
 fastapi = "^0.111.0"
 llama-index-vector-stores-qdrant = "^0.2.8"
+bitsandbytes = "^0.43.1"
 
 
 [build-system]

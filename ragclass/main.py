@@ -1,17 +1,16 @@
-import fastapi
-import qdrant_client
 import logging
-from llama_index.core import Settings, Document, VectorStoreIndex, Response
-from llama_index.embeddings.huggingface import HuggingFaceEmbedding
-from llama_index.llms.huggingface import HuggingFaceLLM
-from transformers import AutoTokenizer
-from llama_index.core.node_parser import SentenceSplitter
-
-from llama_index.vector_stores.qdrant import QdrantVectorStore
 import uuid
 
-from fastapi import UploadFile, File
-
+import fastapi
+import qdrant_client
+import torch
+from fastapi import File, UploadFile
+from llama_index.core import Document, Response, Settings, VectorStoreIndex
+from llama_index.core.node_parser import SentenceSplitter
+from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+from llama_index.llms.huggingface import HuggingFaceLLM
+from llama_index.vector_stores.qdrant import QdrantVectorStore
+from transformers import AutoTokenizer, BitsAndBytesConfig
 
 logging.basicConfig(level=logging.INFO)
 app = fastapi.FastAPI()
@@ -22,7 +21,12 @@ RAG app with two endpoints:
 2. get endpoint that takes the unique identifier and a question and returns the answer
 
 """
-
+quantization_config = BitsAndBytesConfig(
+    load_in_4bit=True,
+    bnb_4bit_compute_dtype=torch.float16,
+    bnb_4bit_quant_type="nf4",
+    bnb_4bit_use_double_quant=True,
+)
 
 llm_name = "HuggingFaceH4/zephyr-7b-alpha"
 embedding_name = "BAAI/bge-base-en-v1.5"
@@ -31,6 +35,9 @@ Settings.tokenizer = AutoTokenizer.from_pretrained(llm_name)
 Settings.llm = HuggingFaceLLM(
     model_name=llm_name,
     tokenizer_name=llm_name,
+    context_window=3900,
+    max_new_tokens=256,
+    model_kwargs={"quantization_config": quantization_config},
 )
 
 client = qdrant_client.QdrantClient("http://localhost:6333")

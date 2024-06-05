@@ -306,6 +306,26 @@ html5lib = ["html5lib"]
 lxml = ["lxml"]
 
 [[package]]
+name = "bitsandbytes"
+version = "0.43.1"
+description = "k-bit optimizers and matrix multiplication routines."
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "bitsandbytes-0.43.1-py3-none-manylinux_2_24_x86_64.whl", hash = "sha256:a81c826d576d6d691c7b4a7491c8fdc0f37f769795d6ca2e54afa605d2c260a3"},
+    {file = "bitsandbytes-0.43.1-py3-none-win_amd64.whl", hash = "sha256:52c1c7189a6ca006555a9663e544e75f40520a97a26e075411f9f9aca0771fcd"},
+]
+
+[package.dependencies]
+numpy = "*"
+torch = "*"
+
+[package.extras]
+benchmark = ["matplotlib", "pandas"]
+test = ["scipy"]
+
+[[package]]
 name = "cattrs"
 version = "23.2.3"
 description = "Composable complex class support for attrs and dataclasses."
@@ -4403,4 +4423,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "<3.13,>=3.10"
-content-hash = "e514bc932c813af617a0e7d1872b0e702c58546adf33f707d01e989766460e55"
+content-hash = "5b97a74f260e9add608d9c05c67c258ffd06126c261f076e15a30a801a2ae01d"
