@@ -26,16 +26,16 @@ Settings.tokenizer = AutoTokenizer.from_pretrained(llm_name)
 Settings.llm = HuggingFaceLLM(
     model_name=llm_name,
     tokenizer_name=llm_name,
-    context_window=int(os.getenv("CONTEXT_WINDOW", "3900")),
-    max_new_tokens=256,
-    model_kwargs={
-        "quantization_config": BitsAndBytesConfig(
-            load_in_4bit=True,
-            bnb_4bit_compute_dtype=torch.float16,
-            bnb_4bit_quant_type="nf4",
-            bnb_4bit_use_double_quant=True,
-        )
-    },
+    # context_window=int(os.getenv("CONTEXT_WINDOW", "3900")),
+    # max_new_tokens=256,
+    # model_kwargs={
+    #     "quantization_config": BitsAndBytesConfig(
+    #         load_in_4bit=True,
+    #         bnb_4bit_compute_dtype=torch.float16,
+    #         bnb_4bit_quant_type="nf4",
+    #         bnb_4bit_use_double_quant=True,
+    #     )
+    # },
 )
 
 client = qdrant_client.QdrantClient("http://localhost:6333")
@@ -99,8 +99,8 @@ async def upload_pdf(file: UploadFile = File(...)) -> dict:
     }
 
 
-@app.post("/query/{collection_name}/{question}")
-async def get(collection_name: str, question: str) -> dict:
+@app.get("/query/{collection_name}/{question}")
+async def ask_question(collection_name: str, question: str) -> dict:
     vector_store = QdrantVectorStore(
         client=client,
         collection_name=collection_name,
